@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>JS Drum Kit</title>
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <div class="keys">
+            <div data-key="65" class="key">
+                <kbd>A</kbd>
+                <span class="sound">clap</span>
+            </div>
+            <div data-key="83" class="key">
+                <kbd>S</kbd>
+                <span class="sound">hihat</span>
+            </div>
+            <div data-key="68" class="key">
+                <kbd>D</kbd>
+                <span class="sound">kick</span>
+            </div>
+            <div data-key="70" class="key">
+                <kbd>F</kbd>
+                <span class="sound">openhat</span>
+            </div>
+            <div data-key="71" class="key">
+                <kbd>G</kbd>
+                <span class="sound">boom</span>
+            </div>
+            <div data-key="72" class="key">
+                <kbd>H</kbd>
+                <span class="sound">ride</span>
+            </div>
+            <div data-key="74" class="key">
+                <kbd>J</kbd>
+                <span class="sound">snare</span>
+            </div>
+            <div data-key="75" class="key">
+                <kbd>K</kbd>
+                <span class="sound">tom</span>
+            </div>
+            <div data-key="76" class="key">
+                <kbd>L</kbd>
+                <span class="sound">tink</span>
+            </div>
+        </div>
+
+        <audio data-key="65" src="sounds/clap.wav"></audio>
+        <audio data-key="83" src="sounds/hihat.wav"></audio>
+        <audio data-key="68" src="sounds/kick.wav"></audio>
+        <audio data-key="70" src="sounds/openhat.wav"></audio>
+        <audio data-key="71" src="sounds/boom.wav"></audio>
+        <audio data-key="72" src="sounds/ride.wav"></audio>
+        <audio data-key="74" src="sounds/snare.wav"></audio>
+        <audio data-key="75" src="sounds/tom.wav"></audio>
+        <audio data-key="76" src="sounds/tink.wav"></audio>
+
+        <script>
+            // Adds event listener to every button
+            const keys = document.querySelectorAll(".key");
+            for (const key of keys) {
+                // Listen for click
+                key.addEventListener("click", () => {
+                    const dataKey = key.getAttribute("data-key");
+
+                    toggleStyle(key, true);
+                    playAudio(dataKey);
+                });
+
+                // Listen for the end of CSS transition
+                key.addEventListener("transitionend", () => {
+                    // Flicks off CSS class, which makes button appear inactive
+                    toggleStyle(key, false);
+                });
+            }
+
+            // Adds event listener to the window, to trigger corresponding button by keypresses
+            window.addEventListener("keydown", (e) => {
+                const key = document.querySelector(`.key[data-key='${e.keyCode}']`);
+
+                // Stop when key is held down or does not have the corresponding button
+                if (e.repeat || key === null) {
+                    return;
+                }
+
+                toggleStyle(key, true);
+                playAudio(e.keyCode);
+            });
+
+            // Finds corresponding audio tag and plays audio by data-key attribute
+            const playAudio = (dataKey) => {
+                const audio = document.querySelector(`audio[data-key='${dataKey}']`);
+
+                // Rewinds audio in the event audio have not finished playing yet
+                audio.currentTime = 0;
+                audio.play();
+            };
+
+            // Toggles CSS class, which makes button appear active/inactive
+            const toggleStyle = (key, add = true, className = "playing") => {
+                if (add) {
+                    key.classList.add(className);
+                } else {
+                    key.classList.remove(className);
+                }
+            };
+        </script>
+    </body>
+</html>
